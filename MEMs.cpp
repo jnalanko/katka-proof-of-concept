@@ -137,7 +137,7 @@ int main(int argc, char** argv){
 
     cerr << "Building BWT wavelet tree" << endl;
     sdsl::wt_huff<> BWT_wt;
-    sdsl::construct_im(BWT_wt, BWT.data(),  1);
+    sdsl::construct_im(BWT_wt, BWT.c_str(),  1);
 
     cerr << "Building C array" << endl;
     vector<int64_t> counts(256);
