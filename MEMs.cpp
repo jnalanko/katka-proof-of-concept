@@ -29,9 +29,11 @@ string concat_FASTA(const string& filename){
 
 void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const sdsl::wt_huff<>& BWT_wt, const vector<int64_t>& C, const string& query){
     // Backward search the query and use the LCP array to drop characters from the right
-    int64_t left = 0;
-    int64_t right = query.size(); // One past the end
     int64_t n = SA.size();
+
+    int64_t left = 0;
+    int64_t right = n; // One past the end
+    
     int64_t match_length = 0;
     for(int64_t i = query.size()-1; i >= 0; i--){
         char c = query[i];
@@ -126,6 +128,8 @@ int main(int argc, char** argv){
         C[i] = counts[i-1] + C[i-1];
     }
 
+    cout << C['A'] << endl;
+    cout << BWT << endl;
     compute_MEMs(SA, LCP, BWT_wt, C, query);
 
 }

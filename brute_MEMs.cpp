@@ -59,6 +59,10 @@ int main(int argc, char** argv){
         suffixes.push_back(ref.substr(i));
     std::sort(suffixes.begin(), suffixes.end());
 
+    for(int64_t i = 0; i < n; i++){
+        cout << i << " " << suffixes[i] << endl;
+    }
+
     for(int64_t i = query.size()-1; i >= 0; i--){
         int64_t match_len = length_of_longest_match(query.substr(i), suffixes);
         int64_t left = 1e9; // "Infinity
@@ -69,7 +73,7 @@ int main(int argc, char** argv){
                 right = max(right, j);
             }
         }
-        cout << left << " " << right << " " << match_len << endl;
+        cout << left << " " << right+1 << " " << match_len << endl; // +1 to right to get exclusive end
     }
 
 
