@@ -154,11 +154,15 @@ int main(int argc, char** argv){
 
     traverse_subtree(tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
 
+    int64_t leaf_count = 0;
     // Print DOT file
     cout << "digraph graphname {" << endl;
     for(Tree::Node v : T.nodes){
         cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
+        if(v.children_ids.size() == 0) leaf_count++;
         //if(v.parent_id ==  v.id) cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
     }
     cout << "}" << endl;
+
+    cerr << "(stderr): Leaf count: " << leaf_count << endl;
 }
