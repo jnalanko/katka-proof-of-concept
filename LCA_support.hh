@@ -37,6 +37,7 @@ public:
     RMQ_support depth_RMQ;
 
     LCA_support(shared_ptr<Tree> tree) : tree(tree) {
+        DFS_tour_depths = make_shared<vector<int64_t>>();
         first_index_on_tour.resize(tree->nodes.size(), 1e18);
         DFS_tour(0,0);
         depth_RMQ = RMQ_support(DFS_tour_depths);
@@ -48,7 +49,7 @@ public:
         if(i > j) swap(i,j);
         int64_t v_pos = first_index_on_tour[v];
         int64_t u_pos = first_index_on_tour[u];
-        int64_t min_depth_pos =  depth_RMQ.RMQ(min(v_pos, u_pos), max(v_pos, u_pos) + 1);
+        int64_t min_depth_pos = depth_RMQ.RMQ(min(v_pos, u_pos), max(v_pos, u_pos) + 1);
         return DFS_tour_nodes[min_depth_pos];
     }
 
