@@ -45,11 +45,17 @@ class RMQ_support{
         }
     }
 
+    int64_t log2_floor(int64_t x){
+        int64_t ans = 1;
+        while(ans * 2 < x) ans *= 2;
+        return ans;
+    }
+
     // Returns the position of the minimum in range [i..j)
     int64_t RMQ(int64_t i, int64_t j){
         assert(i < j);
         if(i + 1 == j) return i; // Singleton interval
-        int64_t log2floor = std::bit_width(j-i) - 1; // Floor of log2 of the interval length
+        int64_t log2floor = log2_floor(j-i);
         int64_t len = ((int64_t) 1) << log2floor;
 
         int64_t p = precalc[i][log2floor];
@@ -76,6 +82,21 @@ void test_RMQ(){
     }
 }
 
+
+class Tree{
+public:
+    struct Node{
+        string name;
+        int64_t id;
+        int64_t parent_id;
+        vector<int64_t> children_ids;
+        vector<double> children_edge_lengths;
+    };
+
+    vector<Node> nodes; // node[0] is the root
+};
+
+Tree T;
 
 class LCA_support{
 
@@ -107,25 +128,14 @@ public:
     }
 
     int64_t LCA(int64_t v, int64_t u){
-
+        int64_t i = first_index_on_tour[v];
+        int64_t j = first_index_on_tour[u];
+        if(i > j) swap(i,j);
+        //int64_t tour_pos = 
+        return 0; // TODO
     }
 
 };
-
-class Tree{
-public:
-    struct Node{
-        string name;
-        int64_t id;
-        int64_t parent_id;
-        vector<int64_t> children_ids;
-        vector<double> children_edge_lengths;
-    };
-
-    vector<Node> nodes; // node[0] is the root
-};
-
-Tree T;
 
 // Returns next comma at the current level of the tree.
 // If not found, returns end + 1
