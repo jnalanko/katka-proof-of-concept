@@ -73,6 +73,8 @@ vector<MEM> compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, 
         }
     }
 
+    MEMs.push_back({left,right,match_length}); // Last one
+
     return MEMs;
 }
 

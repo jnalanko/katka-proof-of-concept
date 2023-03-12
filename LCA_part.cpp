@@ -58,6 +58,10 @@ void print_subgraph_in_dot_format(shared_ptr<Tree> T, const vector<int64_t>& LCA
         }
     }
 
+    // Add all nodes to subgraph
+    //for(int64_t v = 0; v < T->nodes.size(); v++)
+    //    subgraph_nodes.insert(v);
+
     // Print the DOT graph
 
     cout << "digraph graphname {" << endl;
