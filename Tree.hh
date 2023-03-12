@@ -2,6 +2,9 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <memory>
 
 using namespace std;
 
@@ -55,8 +58,6 @@ public:
 
 class Tree_Loader{
 
-    Tree T;
-
     public:
 
     // Returns next comma at the current level of the tree.
@@ -90,16 +91,17 @@ class Tree_Loader{
 
     // [left, right] is a segment of tree_encoding
     // Returns the node id of the root of the subtree
-    int64_t traverse_subtree(const string& tree_encoding, int64_t left, int64_t right, int64_t parent_id){
+    // T is the tree that is being built
+    int64_t traverse_subtree(Tree* T, const string& tree_encoding, int64_t left, int64_t right, int64_t parent_id){
 
         // Create a new node (added to the tree at the end of the function
         Tree::Node v;
         v.parent_id = parent_id;
-        v.id = T.nodes.size(); // Create a new id
+        v.id = T->nodes.size(); // Create a new id
 
         // Push the node to the tree. The data will be updated at the end of the function, but
         // we need to push this node here now to reverse the id in the tree.
-        T.nodes.push_back(v);
+        T->nodes.push_back(v);
 
         // Subtree -> Leaf | Internal
 
@@ -140,7 +142,7 @@ class Tree_Loader{
                         string length = tree_encoding.substr(subtree_end+1+1, branch_end - subtree_end - 1);
                         v.children_edge_lengths.push_back(stod(length));
                     }
-                    int64_t child_id = traverse_subtree(tree_encoding, subtree_start, subtree_end, v.id);
+                    int64_t child_id = traverse_subtree(T, tree_encoding, subtree_start, subtree_end, v.id);
                     v.children_ids.push_back(child_id);
                 } else{
                     // Subtree is a leaf
@@ -152,7 +154,7 @@ class Tree_Loader{
                         string length = tree_encoding.substr(colon_pos + 1, branch_end - (colon_pos+1) + 1);
                         v.children_edge_lengths.push_back(stod(length));
                     }
-                    int64_t child_id = traverse_subtree(tree_encoding, subtree_start, subtree_end, v.id);
+                    int64_t child_id = traverse_subtree(T, tree_encoding, subtree_start, subtree_end, v.id);
                     v.children_ids.push_back(child_id);
                 }
 
@@ -165,13 +167,13 @@ class Tree_Loader{
             v.name = tree_encoding.substr(left, right-left+1);
         }
 
-        T.nodes[v.id] = v; // # Update the node
+        T->nodes[v.id] = v; // # Update the node
         return v.id;
     }
 
-    Tree load_tree(const string& tree_encoding){
-        T.nodes.clear();
-        traverse_subtree(tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
+    unique_ptr<Tree> load_tree(const string& tree_encoding){
+        unique_ptr<Tree> T = make_unique<Tree>();
+        traverse_subtree(T.get(), tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
         return T;
     }
 };

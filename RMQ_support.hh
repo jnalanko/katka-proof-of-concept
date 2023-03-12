@@ -58,7 +58,7 @@ class RMQ_support{
     }
 };
 
-void test_RMQ(){
+void test_RMQ_support(){
     srand(234);
     auto data = make_shared<vector<int64_t>>();;
     int64_t n = 30;

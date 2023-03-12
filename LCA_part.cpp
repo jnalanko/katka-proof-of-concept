@@ -18,8 +18,7 @@ int main(int argc, char** argv){
     // Trim trailing whitespace
     while(tree_encoding.back() == ' ' || tree_encoding.back() == '\n') tree_encoding.pop_back();
 
-    Tree_Loader TL;
-    Tree T = TL.load_tree(tree_encoding);
+    Tree T = make_unique<Tree_Loader>()->load_tree(tree_encoding);
 
     T.dfs_leaf_names_left_to_right(0);
 

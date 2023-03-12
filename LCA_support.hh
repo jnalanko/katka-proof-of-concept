@@ -53,3 +53,10 @@ public:
     }
 
 };
+
+void test_LCA_support(){
+    string tree_encoding = "(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);";
+    shared_ptr<Tree> T = make_unique<Tree_Loader>()->load_tree(tree_encoding);
+    LCA_support LCA(T);
+    cout << LCA.LCA(2,3) << endl;
+}
