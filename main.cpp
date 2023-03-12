@@ -145,6 +145,24 @@ int64_t traverse_subtree(const string& tree_encoding, int64_t left, int64_t righ
     return v.id;
 }
 
+void dfs_leaf_names_left_to_right(int64_t v_id){
+    Tree::Node v = T.nodes[v_id];
+    if(v.children_ids.size() == 0){
+        cout << v.name << endl;
+    }
+    for(int64_t u_id : v.children_ids){
+        dfs_leaf_names_left_to_right(u_id);
+    }
+}
+
+void print_graph_in_dot_format(){
+    cout << "digraph graphname {" << endl;
+    for(Tree::Node v : T.nodes){
+        cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
+    }
+    cout << "}" << endl;
+}
+
 
 int main(int argc, char** argv){
     string tree_encoding = read_file(argv[1]);
@@ -154,15 +172,6 @@ int main(int argc, char** argv){
 
     traverse_subtree(tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
 
-    int64_t leaf_count = 0;
-    // Print DOT file
-    cout << "digraph graphname {" << endl;
-    for(Tree::Node v : T.nodes){
-        cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
-        if(v.children_ids.size() == 0) leaf_count++;
-        //if(v.parent_id ==  v.id) cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
-    }
-    cout << "}" << endl;
+    dfs_leaf_names_left_to_right(0);
 
-    cerr << "(stderr): Leaf count: " << leaf_count << endl;
 }

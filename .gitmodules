@@ -1,0 +1,3 @@
+[submodule "BD_BWT_index"]
+	path = BD_BWT_index
+	url = https://github.com/jnalanko/BD_BWT_index
