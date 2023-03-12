@@ -150,7 +150,10 @@ int main(int argc, char** argv){
 
     traverse_subtree(tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
 
+    // Print DOT file
+    cout << "digraph graphname {" << endl;
     for(Tree::Node v : T.nodes){
-        cout << v.id << " " << v.parent_id << endl;
+        cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
     }
+    cout << "}" << endl;
 }
