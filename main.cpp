@@ -73,6 +73,10 @@ int64_t traverse_subtree(const string& tree_encoding, int64_t left, int64_t righ
     v.parent_id = parent_id;
     v.id = T.nodes.size(); // Create a new id
 
+    // Push the node to the tree. The data will be updated at the end of the function, but
+    // we need to push this node here now to reverse the id in the tree.
+    T.nodes.push_back(v);
+
     // Subtree -> Leaf | Internal
 
     // Is this an internal node or a leaf?
@@ -137,7 +141,7 @@ int64_t traverse_subtree(const string& tree_encoding, int64_t left, int64_t righ
         v.name = tree_encoding.substr(left, right-left+1);
     }
 
-    T.nodes.push_back(v);
+    T.nodes[v.id] = v; // # Update the node
     return v.id;
 }
 
@@ -154,6 +158,7 @@ int main(int argc, char** argv){
     cout << "digraph graphname {" << endl;
     for(Tree::Node v : T.nodes){
         cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
+        //if(v.parent_id ==  v.id) cout << "  " << v.parent_id << " -> " << v.id << ";" << endl;
     }
     cout << "}" << endl;
 }
