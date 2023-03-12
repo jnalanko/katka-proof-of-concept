@@ -2,6 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#include <memory>
+#include <cmath>
+#include <unordered_map>
+#include <bit>
 
 using namespace std;
 
@@ -19,6 +23,85 @@ string read_file(string filename){
     t.read(&buffer[0], size);
     return buffer;
 }
+
+class RMQ_support{
+    public:
+
+    shared_ptr<vector<int64_t>> data;
+
+    vector<vector<int64_t>> precalc;
+    // precalc[i][j] = position of the minimum of data[i .. i+2^j)
+
+    RMQ_support(shared_ptr<vector<int64_t>> data) : data(data){
+        int64_t n = data->size();
+        precalc.resize(n);
+        for(int64_t i = 0; i < n; i++){
+            for(int64_t len = 1; len <= n; len *= 2){
+                int64_t end = min(i + len, n); // One past the end
+                auto it = std::min_element(data->data() + i, data->data() + end);
+                int64_t min_pos = it - data->data();
+                precalc[i].push_back(min_pos);
+            }
+        }
+    }
+
+    // Returns the position of the minimum in range [i..j)
+    int64_t RMQ(int64_t i, int64_t j){
+        assert(i < j);
+        if(i + 1 == j) return i; // Singleton interval
+        int64_t log2floor = std::bit_width(j-i) - 1; // Floor of log2 of the interval length
+        int64_t len = ((int64_t) 1) << log2floor;
+
+        int64_t p = precalc[i][log2floor];
+        int64_t q = precalc[j - len][log2floor];
+
+        return data->at(p) < data->at(q) ? p : q;
+    }
+};
+
+
+// 001 1 0 1
+// 010 2 1 2
+// 011 2 1 2
+// 100 3 2 4
+// 101 3 2 4
+// 110 3 2 4
+// 111 3 2 4
+
+class LCA_support{
+
+private:
+    void DFS_tour(int64_t v, int64_t depth){
+        int64_t tour_index = DFS_tour_nodes.size();
+
+        DFS_tour_nodes.push_back(v);
+        DFS_tour_depths.push_back(depth);
+        first_index_on_tour[v] = min(first_index_on_tour[v], tour_index);
+
+        for(int64_t u : tree->nodes[v].children_ids){
+            DFS_tour(u, depth+1);
+            DFS_tour_nodes.push_back(v);
+            DFS_tour_depths.push_back(depth);
+        }
+    }
+
+public:
+
+    shared_ptr<Tree> tree;
+    vector<int64_t> DFS_tour_nodes; // List of node ids in tour order
+    vector<int64_t> DFS_tour_depths; // List of node depths in your order
+    vector<int64_t> first_index_on_tour; // node -> first index on tour
+
+    LCA_support(shared_ptr<Tree> tree) : tree(tree) {
+        first_index_on_tour.resize(tree->nodes.size(), 1e18);
+        DFS_tour(0,0);
+    }
+
+    int64_t LCA(int64_t v, int64_t u){
+
+    }
+
+};
 
 class Tree{
 public:
