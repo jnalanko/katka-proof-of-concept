@@ -59,14 +59,23 @@ class RMQ_support{
     }
 };
 
+void test_RMQ(){
+    srand(234);
+    auto data = make_shared<vector<int64_t>>();;
+    int64_t n = 30;
+    for(int64_t i = 0; i < n; i++){
+        data->push_back(rand() % 10);
+    }
+    RMQ_support RMQ(data);
+    for(int64_t i = 0; i < n; i++){
+        for(int64_t j = i + 1; j <= n; j++){ // exclusive end
+            int64_t correct_answer = std::min_element(data->begin(), data->begin() + j) - data->begin();
+            int64_t our_answer = RMQ.RMQ(i,j);
+            cout << correct_answer << " " << our_answer << endl;
+        }
+    }
+}
 
-// 001 1 0 1
-// 010 2 1 2
-// 011 2 1 2
-// 100 3 2 4
-// 101 3 2 4
-// 110 3 2 4
-// 111 3 2 4
 
 class LCA_support{
 
@@ -248,6 +257,10 @@ void print_graph_in_dot_format(){
 
 
 int main(int argc, char** argv){
+
+    test_RMQ();
+    return 0;
+
     string tree_encoding = read_file(argv[1]);
 
     // Trim trailing whitespace
