@@ -23,10 +23,6 @@ string concat_FASTA(const string& filename){
     return concat;
 }
 
-//               -----
-// 6 7 3 4 7 4 6 7 5 7 6 5 3 5
-//           -------------
-
 void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const sdsl::wt_huff<>& BWT_wt, const vector<int64_t>& C, const string& query){
     // Backward search the query and use the LCP array to drop characters from the right
     int64_t n = SA.size();
@@ -37,7 +33,6 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
     int64_t match_length = 0;
     for(int64_t i = query.size()-1; i >= 0; i--){
         char c = query[i];
-        cout << "c = " << c << endl;
         int64_t rankleft = BWT_wt.rank(left, c);
         int64_t rankright = BWT_wt.rank(right, c);
         while(rankleft == rankright){
@@ -50,8 +45,6 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
         
             rankleft = BWT_wt.rank(left, c);
             rankright = BWT_wt.rank(right, c);
-
-            cout << "up to " << left << " " << right << " " << match_length << " " << rankleft << " " << rankright << endl;
         }
 
         // Do the FM index step
@@ -131,8 +124,6 @@ int main(int argc, char** argv){
         C[i] = counts[i-1] + C[i-1];
     }
 
-    cout << C['A'] << endl;
-    cout << BWT << endl;
     compute_MEMs(SA, LCP, BWT_wt, C, query);
 
 }
