@@ -35,7 +35,16 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
         char c = query[i];
         int64_t rankleft = BWT_wt.rank(left, c);
         int64_t rankright = BWT_wt.rank(right, c);
-        while(rankleft == rankright){
+
+        bool MEM_flag = true;
+        while(rankleft == rankright){ // No c to the left
+
+            if(MEM_flag){
+                // Print the MEM
+                cout << left << " " << right << " " << match_length << endl;
+                MEM_flag = false;
+            }
+
             if(match_length == 0) break; // c does not occur in the BWT at all
 
             // Need to expand the interval
@@ -53,7 +62,7 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
 
         match_length++;
 
-        cout << left << " " << right << " " << match_length << endl;
+        
     }
 }
 
