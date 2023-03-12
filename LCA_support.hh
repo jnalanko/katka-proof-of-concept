@@ -56,11 +56,40 @@ public:
 };
 
 void test_LCA_support(){
-    string tree_encoding = "((L1,L2)V1,(L3,L4,L5)V2,(L6,L7)V3)Root;";
+    string tree_encoding = "((L1,L2)V1,(L3,(L4,L5)V4)V2,(L6,L7)V3)Root;";
     shared_ptr<Tree> T = make_unique<Tree_Loader>()->load_tree(tree_encoding);
     for(Tree::Node v : T->nodes){
         cout << v.to_string() << endl;
     }
     LCA_support LCA(T);
-    cout << LCA.LCA(4,5) << endl;
+
+    auto get_all_ancestors = [&](int64_t v){
+        vector<int64_t> ancestors;
+        while(v != 0){
+            ancestors.push_back(v);
+            v = T->nodes[v].parent_id;
+        } ancestors.push_back(v);
+        return ancestors;
+    };
+
+    auto brute_LCA = [&](int64_t v, int64_t u){
+        vector<int64_t> v_anc = get_all_ancestors(v);
+        vector<int64_t> u_anc = get_all_ancestors(u);
+        int64_t lca = -1;
+        while(v_anc.size() > 0 && u_anc.size() > 0 && v_anc.back() == u_anc.back()){
+            lca = v_anc.back();
+            v_anc.pop_back();
+            u_anc.pop_back();
+        }
+        return lca;
+    };
+
+    for(int64_t v = 0; v < T->nodes.size(); v++){
+        for(int64_t u = 0; u < T->nodes.size(); u++){
+            int64_t true_lca = brute_LCA(u,v);
+            int64_t our_lca = LCA.LCA(u,v);
+            cout << true_lca << " " << our_lca << endl;
+            assert(true_lca == our_lca);
+        }
+    }
 }

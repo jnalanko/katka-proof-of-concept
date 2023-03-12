@@ -28,10 +28,8 @@ class RMQ_support{
                 auto it = std::min_element(data->begin() + i, data->begin() + end);
                 int64_t min_pos = it - data->begin();
                 precalc[i].push_back(min_pos);
-                if(i == 0) cout << precalc[0].back() << " ";
             }
         }
-        cout << endl;
     }
 
     int64_t log2_floor(int64_t x){ // TODO: O(1)
