@@ -19,10 +19,11 @@ string concat_FASTA(const string& filename){
     string line;
     while(getline(in, line)){
         if(line.size() > 0 && line[0] != '>')
-            concat += line;
+            concat += "$" + line;
     }
     return concat;
 }
+
 
 int64_t lcp(const string& S, const string& T){
     int64_t len = 0;
@@ -51,7 +52,7 @@ int main(int argc, char** argv){
     string ref = concat_FASTA(argv[1]);
     string query = concat_FASTA(argv[2]);
 
-    ref += '$';
+    ref += '#';
     int64_t n = ref.size();
 
     vector<string> suffixes;

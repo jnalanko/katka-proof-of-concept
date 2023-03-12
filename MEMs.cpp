@@ -18,13 +18,21 @@ string concat_FASTA(const string& filename){
     string line;
     while(getline(in, line)){
         if(line.size() > 0 && line[0] != '>')
-            concat += line;
+            concat += "$" + line;
     }
     return concat;
 }
 
-void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const sdsl::wt_huff<>& BWT_wt, const vector<int64_t>& C, const string& query){
+struct MEM{
+    int64_t lex_start;
+    int64_t lex_end; // One past end
+    int64_t match_length;
+};
+
+vector<MEM> compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const sdsl::wt_huff<>& BWT_wt, const vector<int64_t>& C, const string& query){
     // Backward search the query and use the LCP array to drop characters from the right
+
+    vector<MEM> MEMs;
     int64_t n = SA.size();
 
     int64_t left = 0;
@@ -40,8 +48,8 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
         while(rankleft == rankright){ // No c to the left
 
             if(MEM_flag){
-                // Print the MEM
-                cout << left << " " << right << " " << match_length << endl;
+                // Record the MEM
+                MEMs.push_back({left, right, match_length});
                 MEM_flag = false;
             }
 
@@ -61,9 +69,9 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
         right = C[c] + BWT_wt.rank(right, c);
 
         match_length++;
-
-        
     }
+
+    return MEMs;
 }
 
 int main(int argc, char** argv){
@@ -76,22 +84,27 @@ int main(int argc, char** argv){
     string ref = concat_FASTA(argv[1]);
     string query = concat_FASTA(argv[2]);
 
-    ref += '$';
+    ref += '#';
     int64_t n = ref.size();
 
-    // Compute the suffix array
     cerr << "Building SA" << endl;
     vector<int64_t> SA(n);
     divsufsort64((sauchar_t*)(&ref[0]), SA.data(), n);
 
     cerr << "Building ISA" << endl;
-    // Compute the inverse suffix array
     vector<int64_t> ISA(n);
     for(int64_t i = 0; i < n; i++){
         ISA[SA[i]] = i;
     }
 
-    // Build the LCP array
+    cerr << "Building DA" << endl;
+    vector<int64_t> DA(n);
+    int64_t doc_id = -1;
+    for(int64_t i = 0; i < n; i++){
+        if(ref[i] == '$') doc_id++;
+        DA[ISA[i]] = doc_id;
+    }
+
     cerr << "Building LCP" << endl;
     vector<int64_t> LCP(n);
 
@@ -112,7 +125,6 @@ int main(int argc, char** argv){
         LCP[lex] = match_length;
     }
 
-    // Build the BWT
     cerr << "Building BWT" << endl;
     string BWT(n, ' ');
     for(int64_t i = 0; i < n; i++){
@@ -133,6 +145,18 @@ int main(int argc, char** argv){
         C[i] = counts[i-1] + C[i-1];
     }
 
-    compute_MEMs(SA, LCP, BWT_wt, C, query);
+    cerr << "Computing MEMs" << endl;
+    vector<MEM> MEMs = compute_MEMs(SA, LCP, BWT_wt, C, query);
+
+    cerr << "Locating leftmost and rightmost document for each MEM" << endl;
+    for(MEM mem : MEMs){
+        int64_t leftmost_doc = 1e18;
+        int64_t rightmost_doc = -1;
+        for(int64_t i = mem.lex_start; i < mem.lex_end; i++){
+            leftmost_doc = min(leftmost_doc, DA[i]);
+            rightmost_doc = max(rightmost_doc, DA[i]);
+        }
+        cout << mem.match_length << " " << leftmost_doc << " " << rightmost_doc << endl;
+    }
 
 }
