@@ -37,18 +37,21 @@ void compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, const s
     int64_t match_length = 0;
     for(int64_t i = query.size()-1; i >= 0; i--){
         char c = query[i];
+        cout << "c = " << c << endl;
         int64_t rankleft = BWT_wt.rank(left, c);
         int64_t rankright = BWT_wt.rank(right, c);
         while(rankleft == rankright){
             if(match_length == 0) break; // c does not occur in the BWT at all
 
             // Need to expand the interval
-            while(left > 0 && LCP[left] >= match_length) left--;
-            while(right < n-1 && LCP[right+1] >= match_length) right++;
             match_length -= 1;
+            while(left > 0 && LCP[left] >= match_length) left--;
+            while(right-1 < n-1 && LCP[right] >= match_length) right++;
+        
+            rankleft = BWT_wt.rank(left, c);
+            rankright = BWT_wt.rank(right, c);
 
-            int64_t rankleft = BWT_wt.rank(left, c);
-            int64_t rankright = BWT_wt.rank(right, c);
+            cout << "up to " << left << " " << right << " " << match_length << " " << rankleft << " " << rankright << endl;
         }
 
         // Do the FM index step

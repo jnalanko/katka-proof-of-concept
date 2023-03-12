@@ -60,7 +60,7 @@ int main(int argc, char** argv){
     std::sort(suffixes.begin(), suffixes.end());
 
     for(int64_t i = 0; i < n; i++){
-        cout << i << " " << suffixes[i] << endl;
+        cout << i << " " << ((i == 0) ? 0 : lcp(suffixes[i], suffixes[i-1])) << " " << suffixes[i] << endl;
     }
 
     for(int64_t i = query.size()-1; i >= 0; i--){
