@@ -49,9 +49,10 @@ vector<int64_t> get_all_ancestors(shared_ptr<Tree> T, int64_t v){
 
 
 void print_subgraph_in_dot_format(shared_ptr<Tree> T, const vector<int64_t>& LCA_nodes){
-    set<int64_t> subgraph_nodes, marked_nodes;
+    set<int64_t> subgraph_nodes;
+    unordered_map<int64_t, int64_t> hit_counts;
     for(int64_t v : LCA_nodes){
-        marked_nodes.insert(v);
+        hit_counts[v]++;
         for(int64_t u : get_all_ancestors(T, v)){
             subgraph_nodes.insert(u);
         }
@@ -63,8 +64,9 @@ void print_subgraph_in_dot_format(shared_ptr<Tree> T, const vector<int64_t>& LCA
     for(int64_t v : subgraph_nodes){
 
         // Add node
-        string color = marked_nodes.count(v) ? "red" : "black";
-        cout << "  " << v << " [style=filled, fillcolor=" << color << "];" << endl;
+        int64_t n_hits = hit_counts[v];
+        string color = n_hits > 0 ? "red" : "white";
+        cout << "  " << v << " [style=filled, fillcolor=" << color << ", label = \"" << n_hits << "\"];" << endl;
 
         // Add edge from parent
         cout << "  " << T->nodes[v].parent_id << " -> " << v << ";" << endl;
