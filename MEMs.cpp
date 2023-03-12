@@ -64,11 +64,13 @@ vector<MEM> compute_MEMs(const vector<int64_t>& SA, const vector<int64_t>& LCP, 
             rankright = BWT_wt.rank(right, c);
         }
 
-        // Do the FM index step
-        left = C[c] + BWT_wt.rank(left, c);
-        right = C[c] + BWT_wt.rank(right, c);
+        if(rankleft < rankright){ // There is at least one c
+            // Do the FM index step
+            left = C[c] + BWT_wt.rank(left, c);
+            right = C[c] + BWT_wt.rank(right, c);
 
-        match_length++;
+            match_length++;
+        }
     }
 
     return MEMs;
