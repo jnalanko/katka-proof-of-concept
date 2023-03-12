@@ -56,8 +56,11 @@ public:
 };
 
 void test_LCA_support(){
-    string tree_encoding = "(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);";
+    string tree_encoding = "((L1,L2)V1,(L3,L4,L5)V2,(L6,L7)V3)Root;";
     shared_ptr<Tree> T = make_unique<Tree_Loader>()->load_tree(tree_encoding);
+    for(Tree::Node v : T->nodes){
+        cout << v.to_string() << endl;
+    }
     LCA_support LCA(T);
-    cout << LCA.LCA(2,3) << endl;
+    cout << LCA.LCA(4,5) << endl;
 }

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <cassert>
+#include <sstream>
 
 using namespace std;
 
@@ -33,6 +35,12 @@ public:
         int64_t parent_id;
         vector<int64_t> children_ids;
         vector<double> children_edge_lengths;
+
+        string to_string(){
+            stringstream ss;
+            ss << id << " " << name << ", parent: " << parent_id;
+            return ss.str();
+        }
     };
 
     vector<Node> nodes; // node[0] is the root
@@ -40,7 +48,7 @@ public:
     void dfs_leaf_names_left_to_right(int64_t v_id){
         Tree::Node v = nodes[v_id];
         if(v.children_ids.size() == 0){
-            cout << v.name << endl;
+            cout << v.id << " " << v.name << endl;
         }
         for(int64_t u_id : v.children_ids){
             dfs_leaf_names_left_to_right(u_id);
@@ -73,6 +81,14 @@ class Tree_Loader{
         }
         return end +1;
     }
+
+    int64_t next_comma_or_paren_or_semicolon(const string& tree_encoding, int64_t start){
+        while(tree_encoding[start] != ',' && tree_encoding[start] != '(' && tree_encoding[start] != ')' && tree_encoding[start] != ';'){
+            start++;
+        }
+        return start;
+    }
+
     int64_t find_close(const string& tree_encoding, int64_t open){
         int64_t depth = 0;
         for(int64_t i = open + 1; ; i++){
@@ -112,7 +128,8 @@ class Tree_Loader{
 
             int64_t open = left;
             int64_t close = find_close(tree_encoding, left);
-            string name = tree_encoding.substr(close+1, right - (close+1) + 1);
+            int64_t name_end = next_comma_or_paren_or_semicolon(tree_encoding, close+1); // One past end
+            string name = tree_encoding.substr(close+1, name_end - (close+1));
             v.name = name;
 
             // BranchSet → Branch | Branch "," BranchSet
@@ -173,7 +190,12 @@ class Tree_Loader{
 
     unique_ptr<Tree> load_tree(const string& tree_encoding){
         unique_ptr<Tree> T = make_unique<Tree>();
-        traverse_subtree(T.get(), tree_encoding, 0, tree_encoding.size()-1-1, 0); // Discard the ';' in the end.
+        int64_t last_closing = -1;
+        for(int64_t i = 0; i < tree_encoding.size(); i++)
+            if(tree_encoding[i] == ')')
+                last_closing = i;
+        assert(last_closing != -1);
+        traverse_subtree(T.get(), tree_encoding, 0, last_closing, 0);
         return T;
     }
 };
