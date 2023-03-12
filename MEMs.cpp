@@ -126,4 +126,6 @@ int main(int argc, char** argv){
         C[i] = counts[i-1] + C[i-1];
     }
 
+    compute_MEMs(SA, LCP, BWT_wt, C, query);
+
 }
