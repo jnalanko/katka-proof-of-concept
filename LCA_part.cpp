@@ -32,6 +32,7 @@ class RMQ_support{
     vector<vector<int64_t>> precalc;
     // precalc[i][j] = position of the minimum of data[i .. i+2^j)
 
+    RMQ_support() {}
     RMQ_support(shared_ptr<vector<int64_t>> data) : data(data){
         int64_t n = data->size();
         precalc.resize(n);
@@ -113,13 +114,13 @@ private:
         int64_t tour_index = DFS_tour_nodes.size();
 
         DFS_tour_nodes.push_back(v);
-        DFS_tour_depths.push_back(depth);
+        DFS_tour_depths->push_back(depth);
         first_index_on_tour[v] = min(first_index_on_tour[v], tour_index);
 
         for(int64_t u : tree->nodes[v].children_ids){
             DFS_tour(u, depth+1);
             DFS_tour_nodes.push_back(v);
-            DFS_tour_depths.push_back(depth);
+            DFS_tour_depths->push_back(depth);
         }
     }
 
@@ -127,20 +128,24 @@ public:
 
     shared_ptr<Tree> tree;
     vector<int64_t> DFS_tour_nodes; // List of node ids in tour order
-    vector<int64_t> DFS_tour_depths; // List of node depths in your order
+    shared_ptr<vector<int64_t>> DFS_tour_depths; // List of node depths in tour order
     vector<int64_t> first_index_on_tour; // node -> first index on tour
+    RMQ_support depth_RMQ;
 
     LCA_support(shared_ptr<Tree> tree) : tree(tree) {
         first_index_on_tour.resize(tree->nodes.size(), 1e18);
         DFS_tour(0,0);
+        depth_RMQ = RMQ_support(DFS_tour_depths);
     }
 
     int64_t LCA(int64_t v, int64_t u){
         int64_t i = first_index_on_tour[v];
         int64_t j = first_index_on_tour[u];
         if(i > j) swap(i,j);
-        //int64_t tour_pos = 
-        return 0; // TODO
+        int64_t v_pos = first_index_on_tour[v];
+        int64_t u_pos = first_index_on_tour[u];
+        int64_t min_depth_pos =  depth_RMQ.RMQ(min(v_pos, u_pos), max(v_pos, u_pos) + 1);
+        return DFS_tour_nodes[min_depth_pos];
     }
 
 };
