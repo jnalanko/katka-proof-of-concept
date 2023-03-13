@@ -42,6 +42,7 @@ int64_t length_of_longest_match(const string& S, const vector<string>& suffixes)
     return ans;
 }
 
+// This program is supposed to print exactly the same output as MEMs.cpp
 int main(int argc, char** argv){
 
     if(argc == 1){
