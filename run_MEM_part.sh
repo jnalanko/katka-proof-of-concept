@@ -1,1 +1,1 @@
-./MEMs open_sc2_10k.afa one_query.fna
+./MEMs open_sc2_10k.afa one_query.fna --doc-ranges
