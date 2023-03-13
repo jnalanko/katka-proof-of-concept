@@ -30,11 +30,6 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    string ref = concat_FASTA(argv[1]);
-    ref += '#';
-
-    string query = concat_FASTA(argv[2]);
-
     bool print_as_lex_ranges = true;
     if(argc == 4){
         if(argv[3] == string("--lex-ranges")){
@@ -46,7 +41,11 @@ int main(int argc, char** argv){
             return 1;
         }
     }
-    
+
+    string ref = concat_FASTA(argv[1]);
+    ref += '#';
+
+    string query = concat_FASTA(argv[2]);
 
     cerr << "Indexing" << endl;
     MEM_Finder finder(ref);
