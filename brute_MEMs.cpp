@@ -56,6 +56,35 @@ pair<int64_t, int64_t> get_lex_range(const string& S, const vector<string>& suff
     return {left, right+1};
 }
 
+int64_t get_doc_id(int64_t text_pos, const string& text){
+    int64_t doc_id = -1;
+    for(int64_t i = 0; i <= text_pos; i++){
+        if(text[text_pos] == '$') doc_id++;
+    }
+    return doc_id;
+}
+
+// Returns a half-open interval of the doc range of S
+pair<int64_t, int64_t> get_doc_range(const string& S, const vector<string>& suffixes, const string& text){
+    int64_t min_doc = 1e9; // "Infinity"
+    int64_t max_doc = -1;
+    int64_t n = suffixes.size();
+    for(int64_t j = 0; j < suffixes.size(); j++){
+        if(lcp(suffixes[j], S) == S.size()){
+            int64_t text_pos = n - suffixes[j].size();
+            int64_t doc_id = get_doc_id(text_pos, text);
+            min_doc = min(min_doc, doc_id);
+            max_doc = min(max_doc, doc_id);
+        }
+    }
+    if(max_doc == -1){
+        cerr << "Error getting doc range of " << S << endl;
+        exit(1);
+    }
+    return {min_doc, max_doc+1};
+}
+
+
 // This program is supposed to print exactly the same output as MEMs.cpp
 int main(int argc, char** argv){
 
@@ -100,7 +129,9 @@ int main(int argc, char** argv){
                 std::tie(left,right) = get_lex_range(query.substr(i, match_len), suffixes);
                 cout << match_len << " " << left << " " << right-1 << endl; // +1 to right to get exclusive end
             } else{
-                cerr << "Error: not implemented" << endl;
+                int64_t min_doc, max_doc;
+                std::tie(min_doc, max_doc) = get_doc_range(query.substr(i, match_len), suffixes, ref);
+                cout << match_len << " " << min_doc << " " << max_doc-1 << endl; // +1 to right to get exclusive end
                 return 1;
             }
         }
