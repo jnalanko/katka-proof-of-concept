@@ -99,7 +99,7 @@ int main(int argc, char** argv){
 
         if(print_as_lex_ranges){
             int64_t left, right;
-            std::tie(left,right) = get_lex_range(query.substr(i), suffixes);
+            std::tie(left,right) = get_lex_range(query.substr(i, match_len), suffixes);
             cout << left << " " << right+1 << " " << match_len << endl; // +1 to right to get exclusive end
         } else{
             cerr << "Error: not implemented" << endl;
